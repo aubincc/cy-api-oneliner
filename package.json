@@ -1,11 +1,17 @@
 {
   "name": "cy-api-oneliner",
   "version": "0.0.0-development",
-  "description": "Build readable oneliners to tests your API and make understandable scenarii based on cypress-io/cypress and @bahmutov/cy-api",
-  "main": "index.js",
+  "description": "Tool to help build readable oneliners to tests your API and make understandable scenarii based on cypress-io/cypress and @bahmutov/cy-api",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cypress run",
+    "cy:open": "cypress open",
+    "build": "tsc",
+    "build:watch": "tsc --watch"
   },
+  "files": [
+    "/dist/*"
+  ],
   "type": "module",
   "keywords": [
     "cypress",
@@ -16,5 +22,10 @@
     "oneliner"
   ],
   "author": "Nicolas Aubin",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@bahmutov/cy-api": "^2.1.3",
+    "cypress": "^9.6.1",
+    "typescript": "^4.6.4"
+  }
 }
