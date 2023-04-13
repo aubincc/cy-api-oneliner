@@ -1,4 +1,4 @@
 node_modules/
-dist/
 cypress/videos/
-cypress/screenshots/
+dist/
+cypress/fixtures/

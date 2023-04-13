@@ -1,31 +1,52 @@
 {
   "name": "cy-api-oneliner",
-  "version": "0.0.0-development",
-  "description": "Tool to help build readable oneliners to tests your API and make understandable scenarii based on cypress-io/cypress and @bahmutov/cy-api",
+  "version": "1.0.0",
+  "description": "Write API tests with minimal effort",
   "main": "dist/index.js",
-  "scripts": {
-    "test": "cypress run",
-    "cy:open": "cypress open",
-    "build": "tsc",
-    "build:watch": "tsc --watch"
-  },
+  "types": "dist/index.d.ts",
   "files": [
     "/dist/*"
   ],
-  "type": "module",
+  "scripts": {
+    "test": "cypress run",
+    "cy:open": "cypress open --e2e --browser electron",
+    "start": "node ./server",
+    "e2e": "start-test 3003",
+    "dev": "start-test 3003 cy:open --e2e --browser electron",
+    "semantic-release": "semantic-release",
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aubincc/cy-api-oneliner.git"
+  },
   "keywords": [
     "cypress",
     "cypress-io",
     "cy-api",
+    "oneliner",
     "api",
-    "test",
-    "oneliner"
+    "test"
   ],
-  "author": "Nicolas Aubin",
+  "author": "Nicolas Aubin <dev@aubin.com> (https://aubin.cc/)",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aubincc/cy-api-oneliner/issues"
+  },
+  "homepage": "https://github.com/aubincc/cy-api-oneliner#readme",
   "devDependencies": {
-    "@bahmutov/cy-api": "^2.1.3",
-    "cypress": "^9.6.1",
-    "typescript": "^4.6.4"
+    "@types/node": "^18.15.11",
+    "cypress": "^12.9.0",
+    "express": "^4.18.2",
+    "prettier": "^2.8.7",
+    "start-server-and-test": "^2.0.0",
+    "typescript": "^5.0.4"
+  },
+  "peerDependencies": {
+    "cypress": ">=3"
+  },
+  "dependencies": {
+    "@bahmutov/cy-api": "^2.2.4"
   }
 }
