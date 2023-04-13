@@ -29,7 +29,7 @@ npm install cypress cy-api-oneliner --save
 npm install cypress cy-api-oneliner --save-dev
 ```
 
-### 2. Run Cypress and close it
+### 2. Run Cypress
 
 ```shell
 npx cypress open --e2e --browser electron
@@ -45,10 +45,14 @@ Paste the following line into the file `cypress/support/e2e.ts`
 import "cy-api-oneliner";
 ```
 
-#### 4. Run Cypress
+#### 4. Create a fixture file
 
-```shell
-npx cypress open --e2e --browser electron
+Create the file `cypress/fixtures/localstorage.backup.json`
+
+Paste this line in that file :
+
+```json
+{}
 ```
 
 #### 4. Create a spec file
