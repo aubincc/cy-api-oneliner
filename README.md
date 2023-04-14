@@ -1,4 +1,4 @@
-# @aubincc/cy-api-oneliner
+# cy-api-oneliner
 
 > Write API tests with minimal effort.
 
@@ -39,7 +39,7 @@ Then close Cypress
 
 ### 3. Import the module
 
-Paste the following line into the file `cypress/support/e2e.ts`
+Paste the following line into the file `cypress/support/e2e.js`
 
 ```javascript
 import "cy-api-oneliner";
