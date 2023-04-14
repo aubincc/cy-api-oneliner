@@ -29,7 +29,7 @@ npm install cypress cy-api-oneliner --save
 npm install cypress cy-api-oneliner --save-dev
 ```
 
-### 2. Run Cypress
+### 2. Run Cypress and close it
 
 ```shell
 npx cypress open --e2e --browser electron
@@ -62,8 +62,8 @@ Create a `.cy.js` file or a `.cy.ts` file in the `cypress/e2e` folder of your pr
 Paste these two lines at the top of your spec file:
 
 ```javascript
-/// <reference types="cy-api-oneliner" />
-import { GET, POST } from "cy-api-oneliner";
+import oneliner from "cy-api-oneliner";
+const { GET, POST } = oneliner.default;
 ```
 
 Start playing!
@@ -73,8 +73,8 @@ Start playing!
 `["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"]` are the available functions that you can use to make HTTP requests to your API.
 
 ```javascript
-/// <reference types="cy-api-oneliner" />
-import { GET, POST } from "cy-api-oneliner";
+import oneliner from "cy-api-oneliner";
+const { GET, POST } = oneliner.default;
 
 describe("Just the two of them", () => {
   GET("/").send();
@@ -85,8 +85,8 @@ describe("Just the two of them", () => {
 or you can import them all at once:
 
 ```javascript
-/// <reference types="cy-api-oneliner" />
-import * as api from "cy-api-oneliner";
+import oneliner from "cy-api-oneliner";
+const { GET, POST } = oneliner.default;
 
 describe("All of them", () => {
   api.GET("/").send();

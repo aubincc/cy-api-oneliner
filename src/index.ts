@@ -39,15 +39,6 @@ declare global {
   }
 }
 
-// TODO: remove
-Cypress.on("test:before:run", function () {
-  Cypress.env("API_MESSAGES", false);
-  Cypress.env("API_SHOW_CREDENTIALS", false);
-  Cypress.env("API_SHOW_GENUINE_REQUEST_OPTIONS_ONLY", false);
-  // Cypress.env("ONELINER_DEFAULT_PATH_FOR_ALIAS", "");
-  // Cypress.env("ONELINER_SESSION_TYPE", "");
-});
-
 let LOCAL_STORAGE_MEMORY: { [key: string]: string } = {};
 
 Cypress.Commands.add("localStorageBackup", (origin?: "toFixture") => {
