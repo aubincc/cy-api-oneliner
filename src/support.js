@@ -332,18 +332,10 @@ const requestBuilder = (config) => {
  * Export one function for each method available
  */
 
-const methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"];
-
-// Take a URL and return a RequestBuilder object
-const generateMethodFunction = (method) => (url) => requestBuilder({ method, url });
-
-// Object to map HTTP methods to method functions
-const generatedFunctions = methods.reduce((result, method) => {
-  // Generate the method function for the current HTTP method
-  const methodFunction = generateMethodFunction(method);
-
-  // Add the method function to the result object
-  return { ...result, [method]: methodFunction };
-}, {});
-
-export default generatedFunctions;
+export const GET = (url) => requestBuilder({ method: "GET", url });
+export const POST = (url) => requestBuilder({ method: "POST", url });
+export const PUT = (url) => requestBuilder({ method: "PUT", url });
+export const DELETE = (url) => requestBuilder({ method: "DELETE", url });
+export const OPTIONS = (url) => requestBuilder({ method: "OPTIONS", url });
+export const HEAD = (url) => requestBuilder({ method: "HEAD", url });
+export const PATCH = (url) => requestBuilder({ method: "PATCH", url });
