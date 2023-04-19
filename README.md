@@ -67,7 +67,7 @@ import { GET, POST, DELETE } from "cy-api-oneliner";
 
 Start playing!
 
-## The HTTP method functions (_the first two lines of your spec file_)
+## The HTTP method functions (_the first line of your spec file_)
 
 `["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"]` are the available functions that you can use to make HTTP requests to your API.
 
@@ -83,12 +83,12 @@ describe("Just the two of them", () => {
 or you can import them all at once:
 
 ```javascript
-import { GET, POST } from "cy-api-oneliner";
+import * as API from "cy-api-oneliner";
 
 describe("All of them", () => {
-  api.GET("/").send();
-  api.POST("/new-file").send();
-  api.DELETE("/files").send();
+  API.GET("/").send();
+  API.POST("/new-file").send();
+  API.DELETE("/files").send();
 });
 ```
 
@@ -152,7 +152,7 @@ By default, when no second param is set, it takes the response body.
 
 If all route return real information in a child path, you can specify that in this Cypress environment variable :
 
-`ONELINER_DEFAULT_PATH_FOR_ALIAS = "body.data"`
+`ONELINER_DEFAULT_PATH_FOR_ALIAS = "body"`
 
 Example :
 
@@ -294,7 +294,7 @@ GET("/user/:id").session("@me.jwt").params({ id: 2 }).status("OK").check({ "body
 
 ## Cypress environment variables
 
-- `ONELINER_DEFAULT_PATH_FOR_ALIAS = "body.data"` see the `.alias()` section [here](#alias-related-cypress-env-vars)
+- `ONELINER_DEFAULT_PATH_FOR_ALIAS = "body"` see the `.alias()` section [here](#alias-related-cypress-env-vars)
 - `ONELINER_API_AUTH_TYPE = "No Auth"` see the `.session()` section [here](#session-related-cypress-env-vars)
 - `ONELINER_API_AUTH_CREDENTIALS_LOCATION: "header"` see the `.session()` section [here](#session-related-cypress-env-vars)
 - `ONELINER_API_STATUS_CODES = {}` see the `.status()` section [here](#the-status-method)
