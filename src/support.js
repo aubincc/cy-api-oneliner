@@ -106,7 +106,7 @@ const extractAliasAndNestedKey = (value) => {
   return { aliasName, nestedKey };
 };
 
-const replaceAliasWithValue = (value) => {
+export const replaceAliasWithValue = (value) => {
   const { aliasName, nestedKey } = extractAliasAndNestedKey(value);
   const aliasData = localStorage.getItem(aliasName);
 

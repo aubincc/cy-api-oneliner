@@ -1,5 +1,5 @@
 import "@bahmutov/cy-api";
-import { GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH } from "./support.js";
+import { GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH, replaceAliasWithValue } from "./support.js";
 
 declare global {
   namespace Cypress {
@@ -35,8 +35,29 @@ declare global {
        ```
        */
       localStorageRestore(origin?: any): Chainable<LocalStorage>
+      /**
+       * Return the value of an alias (with or with path to nested key)
+       * @param alias must be a string and start with "@"
+       * @example
+       ```
+        it("Iterate over userlist", () => {
+          GET("/users")alias("userlist").send();
+          cy.wrapAlias("@userlist").each((user) => {
+            GET("/user/:id").params({ id: user.id }).send("inHook");
+          })
+        });
+       ```
+       */
+      wrapAlias(alias: Alias): Chainable<string> | Cypress.Chainable<string[]>;
+
     }
   }
+}
+
+interface Alias {
+  startsWith: (prefix: string) => boolean;
+  substring: (start: number) => string;
+  length: number;
 }
 
 let LOCAL_STORAGE_MEMORY: { [key: string]: string } = {};
@@ -61,6 +82,10 @@ Cypress.Commands.add("localStorageRestore", (origin?: "fromFixture") => {
       localStorage.setItem(key, LOCAL_STORAGE_MEMORY[key]);
     });
   }
+});
+
+Cypress.Commands.add("wrapAlias", (alias: Alias) => {
+  cy.wrap(replaceAliasWithValue(alias), { log: false });
 });
 
 export { GET, POST, DELETE, PUT, PATCH, OPTIONS, HEAD };
