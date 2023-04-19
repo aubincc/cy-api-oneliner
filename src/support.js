@@ -59,11 +59,70 @@ const pathArrayToValue = (obj, path) => {
   return pathArrayToValue(obj, remainingKeys);
 };
 
+const extractAliasAndNestedKey = (value) => {
+  const atSignIndex = value.indexOf("@");
+  if (atSignIndex === -1) {
+    return { aliasName: value, nestedKey: null };
+  }
+
+  let aliasName = "";
+  let nestedKey = null;
+  let i = atSignIndex + 1;
+  while (i < value.length) {
+    const char = value[i];
+    if (char === ".") {
+      nestedKey = value.substring(i + 1);
+      break;
+    } else if (char === "[") {
+      const closingBracketIndex = value.indexOf("]", i);
+      if (closingBracketIndex === -1) {
+        nestedKey = value.substring(i);
+        break;
+      }
+      aliasName = value.substring(atSignIndex + 1, i);
+      nestedKey = value.substring(i, closingBracketIndex + 1);
+      break;
+    }
+    i++;
+  }
+  if (nestedKey !== null && nestedKey[0] === ".") {
+    nestedKey = nestedKey.substring(1);
+  }
+  if (nestedKey === null) {
+    aliasName = value.substring(atSignIndex + 1);
+  }
+  return { aliasName, nestedKey };
+};
+
 const replaceAliasWithValue = (value) => {
-  const [, aliasName, nestedKey] = value.match(/^@([a-zA-Z\d_-À-ÖØ-öø-ÿ]+).(.+)$/) || [];
+  const { aliasName, nestedKey } = extractAliasAndNestedKey(value);
   const aliasData = localStorage.getItem(aliasName);
-  const resolvedData = aliasData ? JSON.parse(aliasData) : null;
-  return nestedKey && resolvedData ? pathArrayToValue(resolvedData, pathToPathArray(nestedKey)) : value;
+
+  // Check if value could be an alias with a path
+  try {
+    const parsedData = JSON.parse(aliasData);
+    if (typeof parsedData === "object" && parsedData !== null) {
+      return pathArrayToValue(parsedData, pathToPathArray(nestedKey));
+    }
+  } catch (e) {}
+
+  // Check if the value is surrounded by quotes
+  if (/^".*"$/.test(aliasData) || /^'.*'$/.test(aliasData)) {
+    return aliasData.slice(1, -1);
+  }
+
+  // Check if the value is a reserved word
+  if (["true", "false", "null"].includes(aliasData)) {
+    return JSON.parse(aliasData);
+  }
+
+  // Check if the value is a number
+  if (!isNaN(aliasData)) {
+    return Number(aliasData);
+  }
+
+  // If none of the above conditions match, return the original string
+  return value;
 };
 
 const replaceAliasesWithValues = (params) => {
