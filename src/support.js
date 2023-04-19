@@ -71,7 +71,12 @@ const extractAliasAndNestedKey = (value) => {
   while (i < value.length) {
     const char = value[i];
     if (char === ".") {
-      nestedKey = value.substring(i + 1);
+      if (nestedKey === null) {
+        aliasName = value.substring(atSignIndex + 1, i);
+        nestedKey = value.substring(i);
+      } else {
+        nestedKey += `.${value.substring(i + 1)}`;
+      }
       break;
     } else if (char === "[") {
       const closingBracketIndex = value.indexOf("]", i);
@@ -79,17 +84,24 @@ const extractAliasAndNestedKey = (value) => {
         nestedKey = value.substring(i);
         break;
       }
-      aliasName = value.substring(atSignIndex + 1, i);
-      nestedKey = value.substring(i, closingBracketIndex + 1);
-      break;
+      if (nestedKey === null) {
+        aliasName = value.substring(atSignIndex + 1, i);
+        nestedKey = value.substring(i, closingBracketIndex + 1);
+      } else {
+        nestedKey += value.substring(i, closingBracketIndex + 1);
+      }
+      i = closingBracketIndex;
+    } else if (i === value.length - 1) {
+      if (nestedKey === null) {
+        aliasName = value.substring(atSignIndex + 1);
+      } else {
+        nestedKey += `.${value.substring(i + 1)}`;
+      }
     }
     i++;
   }
   if (nestedKey !== null && nestedKey[0] === ".") {
     nestedKey = nestedKey.substring(1);
-  }
-  if (nestedKey === null) {
-    aliasName = value.substring(atSignIndex + 1);
   }
   return { aliasName, nestedKey };
 };
