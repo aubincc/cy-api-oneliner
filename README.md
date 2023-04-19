@@ -57,12 +57,12 @@ Paste this line in that file :
 
 #### 4. Create a spec file
 
-Create a `.cy.js` file or a `.cy.ts` file in the `cypress/e2e` folder of your project.
+Create a `.cy.(js|ts)` file in the `cypress/e2e` folder of your project.
 
-Paste these two lines at the top of your spec file:
+Paste this line at the top of your spec file:
 
 ```javascript
-import { GET, POST } from "cy-api-oneliner";
+import { GET, POST, DELETE } from "cy-api-oneliner";
 ```
 
 Start playing!
@@ -230,7 +230,7 @@ it("test the good ones"), () => {
   });
 });
 
-it("test the good ones"), () => {
+it("test the bad ones"), () => {
   badones.forEach((b) => {
     GET("/user/:id").params({id: ${b}}).send("inHook");
   });
