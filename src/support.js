@@ -114,7 +114,11 @@ const replaceAliasWithValue = (value) => {
   try {
     const parsedData = JSON.parse(aliasData);
     if (typeof parsedData === "object" && parsedData !== null) {
-      return pathArrayToValue(parsedData, pathToPathArray(nestedKey));
+      if (nestedKey) {
+        return pathArrayToValue(parsedData, pathToPathArray(nestedKey));
+      } else {
+        return parsedData;
+      }
     }
   } catch (e) {}
 
