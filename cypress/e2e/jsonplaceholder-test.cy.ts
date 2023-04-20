@@ -17,4 +17,9 @@ describe("The jsonplaceholder test", {
   GET("/users").status("OK").alias("userlist").send();
   GET("/users/:id").params({ id: "@userlist.[0].id" }).status("OK").check({ "body.name": "Leanne Graham" }).send();
   GET("/toto").status("NOTFOUND").send();
+
+  ["a", 0, false, true, Infinity, {}, [], null, undefined].forEach(V => {
+    GET("/users/:id").params({ id: V }).send();
+  })
+
 });
