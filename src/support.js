@@ -1,5 +1,3 @@
-/// <reference types="@bahmutov/cy-api" />
-
 const pathToPathArray = (str) => {
   if (Array.isArray(str)) {
     return str;
@@ -185,7 +183,22 @@ const requestBuilder = (config) => {
           value = resolvedValue;
         }
 
-        return builtUrl.replace(`:${key}`, value.toString());
+        const routeFormattedValue = () => {
+          switch (typeof value) {
+            case "undefined":
+              return "undefined";
+            case "number":
+            case "boolean":
+              return value.toString();
+            case "object":
+              return JSON.stringify(value);
+            case "string":
+            default:
+              return value;
+          }
+        };
+
+        return builtUrl.replace(`:${key}`, routeFormattedValue());
       }, url);
     }
 
