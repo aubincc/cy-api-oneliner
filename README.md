@@ -292,6 +292,29 @@ POST("/auth/login").bodyparams({ user: "god", pwd: "V3ry$tr0ngP4s$w0rd!" }).alia
 GET("/user/:id").session("@me.jwt").params({ id: 2 }).status("OK").check({ "body.data.name": "Bahmutov", "body.data.id": 2 }).send();
 ```
 
+## Cypress Custom Commands
+
+### `cy.localStorageBackup()` & `cy.localStorageRestore()`
+
+see the `.alias()` section [here](#across-tests--across-spec-files)
+
+### `cy.wrapAlias()`
+
+Return a the value of an alias, with or without its nested key
+
+Example:
+```javascript
+it("Iterate over a list", () => {
+  GET("/week").alias("weeklist").send("inHook");
+  cy.wrapAlias("@weeklist").each((week) => {
+    cy.wrap(week).should((w) => {
+      expect(w.number).toBeGreaterThanOrEqual(1);
+      expect(w.number).toBeLessThanOrEqual(52);
+    });
+  });
+});
+```
+
 ## Cypress environment variables
 
 - `ONELINER_DEFAULT_PATH_FOR_ALIAS = "body"` see the `.alias()` section [here](#alias-related-cypress-env-vars)
