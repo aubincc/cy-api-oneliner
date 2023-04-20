@@ -140,12 +140,13 @@ export const replaceAliasWithValue = (value) => {
 };
 
 const replaceAliasesWithValues = (params) => {
-  return Object.entries(params).reduce((result, [key, value]) => {
-    return {
-      ...result,
-      [key]: typeof value === "string" && value.startsWith("@") ? replaceAliasWithValue(value) : value,
-    };
-  }, {});
+  if (Array.isArray(params)) {
+    return params.map(replaceAliasesWithValues);
+  } else if (typeof params === "object" && params !== null) {
+    return Object.fromEntries(Object.entries(params).map(([key, value]) => [key, typeof value === "string" && value.startsWith("@") ? replaceAliasWithValue(value) : replaceAliasesWithValues(value)]));
+  } else {
+    return params;
+  }
 };
 
 /**
