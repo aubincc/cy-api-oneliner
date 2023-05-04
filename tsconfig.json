@@ -4,6 +4,7 @@
         "declaration": true,
         "allowJs": true,
         "target": "es5",
+        "removeComments": false,
         "strict": true
     },
     "include": [

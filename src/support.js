@@ -141,9 +141,18 @@ export const replaceAliasWithValue = (value) => {
 
 const replaceAliasesWithValues = (params) => {
   if (Array.isArray(params)) {
-    return params.map(replaceAliasesWithValues);
+    return params.map((value) => (typeof value === "string" && value.startsWith("@") ? replaceAliasWithValue(value) : replaceAliasesWithValues(value)));
   } else if (typeof params === "object" && params !== null) {
-    return Object.fromEntries(Object.entries(params).map(([key, value]) => [key, typeof value === "string" && value.startsWith("@") ? replaceAliasWithValue(value) : replaceAliasesWithValues(value)]));
+    return Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [
+        key,
+        typeof value === "string" && value.startsWith("@")
+          ? replaceAliasWithValue(value)
+          : Array.isArray(value) && value.every((v) => typeof v === "string" && v.startsWith("@"))
+          ? value.map(replaceAliasWithValue)
+          : replaceAliasesWithValues(value),
+      ])
+    );
   } else {
     return params;
   }
