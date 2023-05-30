@@ -303,6 +303,7 @@ see the `.alias()` section [here](#across-tests--across-spec-files)
 Return a the value of an alias, with or without its nested key
 
 Example:
+
 ```javascript
 it("Iterate over a list", () => {
   GET("/week").alias("weeklist").send("inHook");
@@ -312,6 +313,20 @@ it("Iterate over a list", () => {
       expect(w.number).toBeLessThanOrEqual(52);
     });
   });
+});
+```
+
+### `cy.dropAlias()`
+
+Clear the localStorage of the given alias
+
+Example:
+
+```javascript
+it("Remove the now useless alias", () => {
+  GET("/banana").alias("bananalist").send("inHook");
+  // more tests with the "@bananalist" alias
+  cy.dropAlias("@bananalist");
 });
 ```
 

@@ -49,7 +49,15 @@ declare global {
        ```
        */
       wrapAlias(alias: Alias): Chainable<string> | Cypress.Chainable<string[]>;
-
+      /**
+       * Remove the localStorage key (alias)
+       * @param alias must be a string and start with "@"
+       * @example
+       ```
+          cy.dropAlias("@userlist");
+       ```
+       */
+      dropAlias(alias: Alias): Chainable<string> | Cypress.Chainable<string[]>;
     }
   }
 }
@@ -86,6 +94,15 @@ Cypress.Commands.add("localStorageRestore", (origin?: "fromFixture") => {
 
 Cypress.Commands.add("wrapAlias", (alias: Alias) => {
   cy.wrap(replaceAliasWithValue(alias), { log: false });
+});
+
+Cypress.Commands.add("dropAlias", (alias: Alias) => {
+  const lsKey: string = alias.substring(1)
+  cy.wrap(window.localStorage.getItem(lsKey), { log: false }).then((aliasNameExists) => {
+    if (aliasNameExists) {
+      cy.window({ log: false }).its("localStorage", { log: false }).invoke("removeItem", lsKey);
+    }
+  });
 });
 
 export { GET, POST, DELETE, PUT, PATCH, OPTIONS, HEAD };
