@@ -61,6 +61,8 @@ describe(
 
     GET("/bar").status("NOTFOUND").check({ "body.code": "SLIM_NOT_FOUND" }).send();
 
+    GET("/skipped/test").skip("issue #666 :: The devil is in the details").send();
+
     it("Try the cy.dropAlias() command", () => {
       cy.window({ log: false }).its("localStorage", { log: false }).invoke("getItem", "user1").then((object) => {
         expect(JSON.parse(object)).to.include({ "id": 2, "name": "Bahmutov", "firstname": "Gleb", "email": "cypress2@api.cc" })
@@ -77,5 +79,6 @@ describe(
         expect(object).to.eq(null)
       });
     });
+
   }
 );

@@ -1,4 +1,5 @@
 import "@bahmutov/cy-api";
+import "@cypress/skip-test/support";
 import { GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH, replaceAliasWithValue } from "./support.js";
 
 declare global {

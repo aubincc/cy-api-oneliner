@@ -292,6 +292,18 @@ POST("/auth/login").bodyparams({ user: "god", pwd: "V3ry$tr0ngP4s$w0rd!" }).alia
 GET("/user/:id").session("@me.jwt").params({ id: 2 }).status("OK").check({ "body.data.name": "Bahmutov", "body.data.id": 2 }).send();
 ```
 
+## The .skip() method
+
+`.skip` allows to skip a test and show a comment.
+
+It CANNOT be used without a comment! The comment MUST be a non-empty string.
+
+When used within with the `.send("inHook")` inside a `beforeEach()` hook for example, it will skip the associated test but will not disable preceeding requests.
+
+```javascript
+GET("/skipped/test").skip("issue #666 :: The devil is in the details").send();
+```
+
 ## Cypress Custom Commands
 
 ### `cy.localStorageBackup()` & `cy.localStorageRestore()`

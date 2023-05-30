@@ -171,6 +171,7 @@ const requestBuilder = (config) => {
   let responseBodyAssertions = [];
   let responseStatusCode = "";
   let authCredentials = {};
+  let requestSkipComment = null;
 
   const buildConfig = () => {
     const { method, url } = config;
@@ -234,6 +235,11 @@ const requestBuilder = (config) => {
     const builtTitleObj = {};
 
     let titleString = `${method} ${url}`; // (refreshable currentTest.title? not yet!)
+
+    if (requestSkipComment) {
+      builtTitleObj.skipComment = requestSkipComment;
+      titleString = titleString.concat("\n » ", "SKIPPED: ", builtTitleObj.skipComment);
+    }
 
     if (Object.keys(requestParams).length) {
       builtTitleObj.endpointParams = JSON.stringify(requestParams);
@@ -344,6 +350,8 @@ const requestBuilder = (config) => {
           }
         }
 
+        cy.skipOn(requestSkipComment ? true : false);
+
         cy.api({ ...buildConfig(), ...requestOptions })
           .then((response) => {
             buildStatusAssertions().forEach((obj) => {
@@ -378,6 +386,10 @@ const requestBuilder = (config) => {
   };
 
   const requestBuilder = {
+    /**
+     * Sends the request
+     * @param {*} mode
+     */
     send: (mode) => {
       if (mode === "inHook") {
         executeRequest("inHook")();
@@ -386,37 +398,83 @@ const requestBuilder = (config) => {
       }
     },
 
+    /**
+     * Saves the response (or part of it) to the localStorage
+     * @param {*} name
+     * @param {*} pathToSavedValue
+     * @returns
+     */
     alias: (name, pathToSavedValue) => {
       responseAlias = name;
       aliasPath = pathToSavedValue;
       return requestBuilder;
     },
 
+    /**
+     * Replaces an id in the given route
+     * @param {*} params
+     * @returns
+     */
     params: (params) => {
       requestParams = params;
       return requestBuilder;
     },
 
+    /**
+     * Adds querystring parameters
+     * @param {*} urlparams
+     * @returns
+     */
     urlparams: (urlparams) => {
       requestUrlParams = urlparams;
       return requestBuilder;
     },
 
+    /**
+     * Adds body parameters
+     * @param {*} bodyparams
+     * @returns
+     */
     bodyparams: (bodyparams) => {
       requestBodyParams = bodyparams;
       return requestBuilder;
     },
 
+    /**
+     * Makes assertions on the response status, with patterns
+     * @param {*} statusCode
+     * @returns
+     */
     status: (statusCode) => {
       responseStatusCode = statusCode;
       return requestBuilder;
     },
 
+    /**
+     * Adds custom assertions on the response
+     * @param {*} assertionObject
+     * @returns
+     */
     check: (assertionObject) => {
       responseBodyAssertions = assertionObject;
       return requestBuilder;
     },
 
+    /**
+     * Skips the current test and adds a comment to its title
+     * @param {*} skipComment
+     * @returns
+     */
+    skip: (skipComment) => {
+      requestSkipComment = typeof skipComment === "string" && skipComment !== "" ? skipComment : null;
+      return requestBuilder;
+    },
+
+    /**
+     * Adds headers for authentication
+     * @param {*} credentials
+     * @returns
+     */
     session: (credentials) => {
       authCredentials = credentials || {};
       return requestBuilder;
