@@ -304,6 +304,16 @@ When used within with the `.send("inHook")` inside a `beforeEach()` hook for exa
 GET("/skipped/test").skip("issue #666 :: The devil is in the details").send();
 ```
 
+## The .description() method
+
+`.description` adds a description to the title of the test.
+
+This can be usefull for end-to-end tests.
+
+```javascript
+GET("/add/description").description("This test has a description").send();
+```
+
 ## Cypress Custom Commands
 
 ### `cy.localStorageBackup()` & `cy.localStorageRestore()`

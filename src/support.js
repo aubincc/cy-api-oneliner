@@ -172,6 +172,7 @@ const requestBuilder = (config) => {
   let responseStatusCode = "";
   let authCredentials = {};
   let requestSkipComment = null;
+  let testDescription = null;
 
   const buildConfig = () => {
     const { method, url } = config;
@@ -234,7 +235,14 @@ const requestBuilder = (config) => {
     const { method, url } = config;
     const builtTitleObj = {};
 
-    let titleString = `${method} ${url}`; // (refreshable currentTest.title? not yet!)
+    let titleString = "";
+
+    if (testDescription) {
+      builtTitleObj.testDescription = testDescription;
+      titleString = titleString.concat("✎ ", builtTitleObj.testDescription, "\n");
+    }
+
+    titleString = titleString.concat(method, " ", url); // (refreshable currentTest.title? not yet!)
 
     if (requestSkipComment) {
       builtTitleObj.skipComment = requestSkipComment;
@@ -349,8 +357,9 @@ const requestBuilder = (config) => {
             }
           }
         }
-
-        cy.skipOn(requestSkipComment ? true : false);
+        if (requestSkipComment) {
+          cy.skipOn(true);
+        }
 
         cy.api({ ...buildConfig(), ...requestOptions })
           .then((response) => {
@@ -467,6 +476,16 @@ const requestBuilder = (config) => {
      */
     skip: (skipComment) => {
       requestSkipComment = typeof skipComment === "string" && skipComment !== "" ? skipComment : null;
+      return requestBuilder;
+    },
+
+    /**
+     * Adds a description to the title of the test
+     * @param {*} description
+     * @returns
+     */
+    description: (description) => {
+      testDescription = typeof description === "string" && description !== "" ? description : null;
       return requestBuilder;
     },
 

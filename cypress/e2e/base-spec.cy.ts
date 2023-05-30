@@ -63,6 +63,8 @@ describe(
 
     GET("/skipped/test").skip("issue #666 :: The devil is in the details").send();
 
+    GET("/add/description").description("This test has a description").send();
+
     it("Try the cy.dropAlias() command", () => {
       cy.window({ log: false }).its("localStorage", { log: false }).invoke("getItem", "user1").then((object) => {
         expect(JSON.parse(object)).to.include({ "id": 2, "name": "Bahmutov", "firstname": "Gleb", "email": "cypress2@api.cc" })
