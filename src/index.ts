@@ -59,6 +59,23 @@ declare global {
        ```
        */
       dropAlias(alias: Alias): Chainable<string> | Cypress.Chainable<string[]>;
+      /**
+       * Save a specific session alias to be used by default with all following requests that do not use the .session() method (alias)
+       * @param alias must be a string and start with "@"
+       * @example
+      ```
+          cy.setSession("@MyUser.token");
+      ```
+      */
+      setSession(alias: Alias): Chainable<string> | Cypress.Chainable<string[]>;
+      /**
+       * Forget any session alias saved to use by default
+       * @example
+      ```
+          cy.dropSession();
+      ```
+      */
+      dropSession(): Chainable<string> | Cypress.Chainable<string[]>;
     }
   }
 }
@@ -102,6 +119,32 @@ Cypress.Commands.add("dropAlias", (alias: Alias) => {
   cy.wrap(window.localStorage.getItem(lsKey), { log: false }).then((aliasNameExists) => {
     if (aliasNameExists) {
       cy.window({ log: false }).its("localStorage", { log: false }).invoke("removeItem", lsKey);
+    }
+  });
+});
+
+Cypress.Commands.add("setSession", (alias: Alias) => {
+  cy.wait(500)
+  if (alias) {
+    const foundAlias = replaceAliasWithValue(alias)
+    if (foundAlias === alias) {
+      expect(alias, "setSession works better with an alias that can be found").to.equal("_alias_no_found_")
+    } else {
+      cy.window({ log: false }).its("localStorage", { log: false }).invoke("setItem", "setSession", alias);
+    }
+  } else {
+    expect(alias, "setSession works better with an alias").to.equal("_alias_not_provided_")
+  }
+  cy.wait(500)
+});
+
+Cypress.Commands.add("dropSession", () => {
+  cy.wrap(window.localStorage.getItem("setSession"), { log: false }).then((sessionExists) => {
+    if (sessionExists) {
+      cy.window({ log: false }).its("localStorage", { log: false }).invoke("removeItem", "setSession");
+      delete LOCAL_STORAGE_MEMORY["setSession"]
+    } else {
+      cy.log("No set session to drop")
     }
   });
 });

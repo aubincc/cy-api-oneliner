@@ -304,7 +304,7 @@ const requestBuilder = (config) => {
 
     switch (authType) {
       case "No Auth":
-        return {};
+        return undefined;
 
       case "API Key":
         const apiKeyHeader = {};
@@ -336,7 +336,7 @@ const requestBuilder = (config) => {
   const executeRequest = (mode) => () => {
     // QUESTION: "Has Cypress.env("ONELINER_API_AUTH_TYPE") been configured?"
     // https://github.com/aubincc/cy-api-oneliner#cypress-environment-variables
-    const authType = Cypress.env("ONELINER_API_AUTH_TYPE") || "No Auth";
+    let authType = Cypress.env("ONELINER_API_AUTH_TYPE") || "No Auth";
     // QUESTION: "Has Cypress.env("ONELINER_API_AUTH_TYPE") been configured?"
     // https://github.com/aubincc/cy-api-oneliner#cypress-environment-variables
     const authLocation = Cypress.env("ONELINER_API_AUTH_CREDENTIALS_LOCATION") || "header";
@@ -346,6 +346,16 @@ const requestBuilder = (config) => {
     if (mode === "inHook") {
       cy.log(testTitle).then(() => {
         const requestOptions = {};
+
+        if (!Object.keys(authCredentials).length && authCredentials !== "") {
+          // Fetch existing setSession if no session is none is specified
+          // Leave as is if no setSession is found
+          let setSession = window.localStorage.getItem("setSession");
+          if (setSession) {
+            authCredentials = setSession;
+          }
+        }
+
         if (Object.keys(authCredentials).length) {
           if (authType !== "No Auth") {
             if (authLocation === "header") {
@@ -355,8 +365,13 @@ const requestBuilder = (config) => {
                 requestOptions.qs = { ...requestOptions.qs, ...{ [authCredentials.name]: authCredentials.value } };
               }
             }
+          } else {
+            requestOptions.headers = undefined;
           }
+        } else {
+          requestOptions.headers = undefined;
         }
+
         if (requestSkipComment) {
           cy.skipOn(true);
         }
@@ -495,7 +510,7 @@ const requestBuilder = (config) => {
      * @returns
      */
     session: (credentials) => {
-      authCredentials = credentials || {};
+      authCredentials = credentials || "";
       return requestBuilder;
     },
   };

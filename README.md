@@ -352,6 +352,51 @@ it("Remove the now useless alias", () => {
 });
 ```
 
+### `cy.setSession()`
+
+Save an alias that will be used by default if .session() is not used in a request
+
+Useful TIP:
+
+When a default session is set, using the .session() method with these values send a request without any authentication:
+
+`.session()`, `.session(0)`, `.session("")`, `.session(null)`, `.session(undefined)`
+
+Example:
+
+```javascript
+before(() => {
+  POST("/auth/login").bodyparams({ user: "login1", pwd: "password1" }).alias("account1").send("inHook");
+  POST("/auth/login").bodyparams({ user: "login1", pwd: "password1" }).alias("account2").send("inHook");
+  cy.setSession("@account1.jwt");
+});
+
+GET("/user/1").send(); // uses "@account1.jwt"
+GET("/user/2").session("").send(); // single shot `ONELINER_API_AUTH_TYPE = "No Auth"`
+GET("/user/3").session("@account2.jwt").send(); // uses "@account2.jwt"
+GET("/user/4").send(); // uses "@account1.jwt"
+```
+
+### `cy.dropSession()`
+
+Forget the setSession
+
+Example:
+
+```javascript
+before(() => {
+  POST("/auth/login").bodyparams({ user: "login1", pwd: "password1" }).alias("account1").send("inHook");
+  cy.setSession("@account1.jwt");
+});
+
+GET("/user/1").send(); // uses "@account1.jwt"
+it("Drop default session", () => {
+  cy.dropSession();
+});
+GET("/user/2").session("@account1.jwt").send(); // uses "@account1.jwt
+GET("/user/3").send();
+```
+
 ## Cypress environment variables
 
 - `ONELINER_DEFAULT_PATH_FOR_ALIAS = "body"` see the `.alias()` section [here](#alias-related-cypress-env-vars)
