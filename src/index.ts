@@ -124,7 +124,6 @@ Cypress.Commands.add("dropAlias", (alias: Alias) => {
 });
 
 Cypress.Commands.add("setSession", (alias: Alias) => {
-  cy.wait(500)
   if (alias) {
     const foundAlias = replaceAliasWithValue(alias)
     if (foundAlias === alias) {
@@ -135,7 +134,6 @@ Cypress.Commands.add("setSession", (alias: Alias) => {
   } else {
     expect(alias, "setSession works better with an alias").to.equal("_alias_not_provided_")
   }
-  cy.wait(500)
 });
 
 Cypress.Commands.add("dropSession", () => {

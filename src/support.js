@@ -106,7 +106,7 @@ const extractAliasAndNestedKey = (value) => {
 
 export const replaceAliasWithValue = (value) => {
   const { aliasName, nestedKey } = extractAliasAndNestedKey(value);
-  const aliasData = localStorage.getItem(aliasName);
+  const aliasData = window.localStorage.getItem(aliasName);
 
   // Check if value could be an alias with a path
   try {
@@ -183,7 +183,7 @@ const requestBuilder = (config) => {
         if (typeof value === "string" && value.startsWith("@")) {
           const [alias, ...pathString] = value.slice(1).split(".");
           pathString = pathString.join("."); // weird fix
-          const aliasValue = localStorage.getItem(alias);
+          const aliasValue = window.localStorage.getItem(alias);
           if (!aliasValue) {
             return "ALIAS_NOT_FOUND";
           }
@@ -343,18 +343,16 @@ const requestBuilder = (config) => {
 
     const testTitle = buildTitle();
 
+    if (!Object.keys(authCredentials).length && authCredentials !== "") {
+      const setSession = window.localStorage.getItem("setSession");
+      if (setSession) {
+        authCredentials = setSession;
+      }
+    }
+
     if (mode === "inHook") {
       cy.log(testTitle).then(() => {
         const requestOptions = {};
-
-        if (!Object.keys(authCredentials).length && authCredentials !== "") {
-          // Fetch existing setSession if no session is none is specified
-          // Leave as is if no setSession is found
-          let setSession = window.localStorage.getItem("setSession");
-          if (setSession) {
-            authCredentials = setSession;
-          }
-        }
 
         if (Object.keys(authCredentials).length) {
           if (authType !== "No Auth") {
@@ -390,7 +388,7 @@ const requestBuilder = (config) => {
               // https://github.com/aubincc/cy-api-oneliner#cypress-environment-variables
               aliasPath = aliasPath || Cypress.env("ONELINER_DEFAULT_PATH_FOR_ALIAS") || "body";
               const savedData = pathArrayToValue(response, pathToPathArray(aliasPath));
-              localStorage.setItem(responseAlias, JSON.stringify(savedData));
+              window.localStorage.setItem(responseAlias, JSON.stringify(savedData));
             }
             return response;
           })
