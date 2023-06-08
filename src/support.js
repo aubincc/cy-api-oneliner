@@ -170,7 +170,7 @@ const requestBuilder = (config) => {
   let requestBodyParams = {};
   let responseBodyAssertions = [];
   let responseStatusCode = "";
-  let authCredentials = {};
+  var authCredentials = {};
   let requestSkipComment = null;
   let testDescription = null;
 
@@ -343,14 +343,17 @@ const requestBuilder = (config) => {
 
     const testTitle = buildTitle();
 
-    if (!Object.keys(authCredentials).length && authCredentials !== "") {
-      const setSession = window.localStorage.getItem("setSession");
-      if (setSession) {
-        authCredentials = setSession;
-      }
-    }
-
     if (mode === "inHook") {
+      if (!Object.keys(authCredentials).length && authCredentials !== "") {
+        cy.window({ log: false })
+          .its("localStorage", { log: false })
+          .invoke("getItem", "setSession")
+          .then((setSession) => {
+            if (setSession) {
+              authCredentials = setSession;
+            }
+          });
+      }
       cy.log(testTitle).then(() => {
         const requestOptions = {};
 
