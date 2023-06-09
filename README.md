@@ -403,11 +403,10 @@ GET("/user/3").send();
 - `ONELINER_API_AUTH_TYPE = "No Auth"` see the `.session()` section [here](#session-related-cypress-env-vars)
 - `ONELINER_API_AUTH_CREDENTIALS_LOCATION: "header"` see the `.session()` section [here](#session-related-cypress-env-vars)
 - `ONELINER_API_STATUS_CODES = {}` see the `.status()` section [here](#the-status-method)
+- `ONELINER_DEFAULT_REQUEST_PARAMS = {}`  to force `failOnStatusCode: false` or `form: true` for every request for example
 
-## Coming next <small>(_my todo list_)</small>
+## Coming some day <small>(_my todo list_)</small>
 
-- A `SETSESSION()` function (possibly with a "inHook" param) for subsequent tests to use one same session alias (_this requires adapting the session() method_)
-- A Cypress envronment variable to set `failOnStatusCode` to true or false depending on what the spec file is for. (_currently set to false always_)
 - Finish documenting the [.session()](#formatting-the-parameter-passed-to-session) section.
 
 ## Work

@@ -6,6 +6,9 @@ describe(
   {
     env: {
       ONELINER_DEFAULT_PATH_FOR_ALIAS: "body",
+      ONELINER_DEFAULT_REQUEST_PARAMS: {
+        failOnStatusCode: false,
+      },
       ONELINER_API_STATUS_CODE_NAMES: {
         OK: { status: 200 },
         NOTFOUND: { status: 404, body: {} },

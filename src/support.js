@@ -178,6 +178,12 @@ const requestBuilder = (config) => {
     const { method, url } = config;
     const builtConfig = { method, url };
 
+    const defaultParams = Cypress.env("ONELINER_DEFAULT_REQUEST_PARAMS");
+
+    if (defaultParams) {
+      Object.assign(builtConfig, defaultParams);
+    }
+
     if (requestParams) {
       builtConfig.url = Object.entries(requestParams).reduce((builtUrl, [key, value]) => {
         if (typeof value === "string" && value.startsWith("@")) {
@@ -225,8 +231,6 @@ const requestBuilder = (config) => {
 
       builtConfig.qs = { ...builtConfig.qs, ...resolvedUrlParams };
     }
-
-    builtConfig.failOnStatusCode = false; // forced for the time being
 
     return builtConfig;
   };

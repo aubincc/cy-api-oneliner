@@ -10,6 +10,9 @@ context(
       API_MESSAGES: false, // @bahmutov/cy-api
       API_SHOW_CREDENTIALS: false, // @bahmutov/cy-api
       ONELINER_DEFAULT_PATH_FOR_ALIAS: "body.data",
+      ONELINER_DEFAULT_REQUEST_PARAMS: {
+        failOnStatusCode: false,
+      },
       ONELINER_API_AUTH_TYPE: "Bearer Token",
       ONELINER_API_AUTH_CREDENTIALS_LOCATION: "header",
       ONELINER_API_STATUS_CODE_NAMES: {
