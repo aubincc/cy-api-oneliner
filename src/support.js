@@ -380,7 +380,7 @@ const requestBuilder = (config) => {
           cy.skipOn(true);
         }
 
-        cy.api({ ...buildConfig(), ...requestOptions })
+        cy.api({ ...buildConfig(), ...requestOptions }, testTitle.split("\n")[0])
           .then((response) => {
             buildStatusAssertions().forEach((obj) => {
               const [key, value] = Object.entries(obj)[0];
