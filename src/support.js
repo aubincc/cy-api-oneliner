@@ -349,10 +349,13 @@ const requestBuilder = (config) => {
           .its("localStorage", { log: false })
           .invoke("getItem", "setSession")
           .then((setSession) => {
+            cy.log(`Using session: "${setSession}" (_from "setSession"_)`);
             if (setSession) {
               authCredentials = setSession;
             }
           });
+      } else {
+        cy.log(`Using session: "${setSession}"`);
       }
       cy.log(testTitle).then(() => {
         const requestOptions = {};
