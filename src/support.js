@@ -358,8 +358,6 @@ const requestBuilder = (config) => {
               authCredentials = setSession;
             }
           });
-      } else {
-        cy.log(`Using session: "${setSession}"`);
       }
       cy.log(testTitle).then(() => {
         const requestOptions = {};
