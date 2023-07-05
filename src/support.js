@@ -158,6 +158,25 @@ const replaceAliasesWithValues = (params) => {
   }
 };
 
+const stringifyAnything = (value) => {
+  switch (typeof value) {
+    case "undefined":
+      return "undefined";
+    case "number":
+    case "boolean":
+      return value.toString();
+    case "object":
+      try {
+        return JSON.stringify(value, null, "");
+      } catch (error) {
+        return `Error: ${error.message}`;
+      }
+    case "string":
+    default:
+      return value;
+  }
+};
+
 /**
  * Make the requestBuilder function
  */
@@ -201,22 +220,7 @@ const requestBuilder = (config) => {
           value = resolvedValue;
         }
 
-        const routeFormattedValue = () => {
-          switch (typeof value) {
-            case "undefined":
-              return "undefined";
-            case "number":
-            case "boolean":
-              return value.toString();
-            case "object":
-              return JSON.stringify(value);
-            case "string":
-            default:
-              return value;
-          }
-        };
-
-        return builtUrl.replace(`:${key}`, routeFormattedValue());
+        return builtUrl.replace(`:${key}`, stringifyAnything(value));
       }, url);
     }
 
@@ -254,17 +258,18 @@ const requestBuilder = (config) => {
     }
 
     if (Object.keys(requestParams).length) {
-      builtTitleObj.endpointParams = JSON.stringify(requestParams);
+      builtTitleObj.endpointParams = stringifyAnything(requestParams);
+
       titleString = titleString.concat("\n » ", "params: ", builtTitleObj.endpointParams);
     }
 
     if (Object.keys(requestBodyParams).length) {
-      builtTitleObj.bodyParams = JSON.stringify(requestBodyParams);
+      builtTitleObj.bodyParams = stringifyAnything(requestBodyParams);
       titleString = titleString.concat("\n » ", "body params: ", builtTitleObj.bodyParams);
     }
 
     if (Object.keys(requestUrlParams).length) {
-      builtTitleObj.queryParams = JSON.stringify(requestUrlParams);
+      builtTitleObj.queryParams = stringifyAnything(requestUrlParams);
       titleString = titleString.concat("\n » ", "query params: ", builtTitleObj.queryParams);
     }
 
@@ -396,7 +401,7 @@ const requestBuilder = (config) => {
               // https://github.com/aubincc/cy-api-oneliner#cypress-environment-variables
               aliasPath = aliasPath || Cypress.env("ONELINER_DEFAULT_PATH_FOR_ALIAS") || "body";
               const savedData = pathArrayToValue(response, pathToPathArray(aliasPath));
-              window.localStorage.setItem(responseAlias, JSON.stringify(savedData));
+              window.localStorage.setItem(responseAlias, stringifyAnything(savedData));
             }
             return response;
           })
