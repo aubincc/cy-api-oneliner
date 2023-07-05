@@ -166,6 +166,9 @@ const stringifyAnything = (value) => {
     case "boolean":
       return value.toString();
     case "object":
+      if (value === null || value === undefined) {
+        return value;
+      }
       try {
         return JSON.stringify(value, null, "");
       } catch (error) {
