@@ -47,7 +47,7 @@
     "cypress": ">=3"
   },
   "dependencies": {
-    "@bahmutov/cy-api": "^2.2.5",
+    "@bahmutov/cy-api": "^2.2.6",
     "@cypress/skip-test": "^2.6.1"
   }
 }
