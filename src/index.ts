@@ -127,7 +127,7 @@ Cypress.Commands.add("setSession", (alias: Alias) => {
   if (alias) {
     const foundAlias = replaceAliasWithValue(alias)
     if (foundAlias === alias) {
-      expect(alias, "setSession works better with an alias that can be found").to.equal("_alias_no_found_")
+      expect(alias, "setSession works better with an alias that can be found").to.equal("_alias_not_found_")
     } else {
       cy.window({ log: false }).its("localStorage", { log: false }).invoke("setItem", "setSession", alias);
     }

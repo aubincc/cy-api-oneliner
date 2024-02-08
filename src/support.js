@@ -118,7 +118,9 @@ export const replaceAliasWithValue = (value) => {
         return parsedData;
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    return aliasData;
+  }
 
   // Check if the value is surrounded by quotes
   if (/^".*"$/.test(aliasData) || /^'.*'$/.test(aliasData)) {
@@ -149,8 +151,8 @@ const replaceAliasesWithValues = (params) => {
         typeof value === "string" && value.startsWith("@")
           ? replaceAliasWithValue(value)
           : Array.isArray(value) && value.every((v) => typeof v === "string" && v.startsWith("@"))
-          ? value.map(replaceAliasWithValue)
-          : replaceAliasesWithValues(value),
+            ? value.map(replaceAliasWithValue)
+            : replaceAliasesWithValues(value),
       ])
     );
   } else {
