@@ -36,18 +36,47 @@ declare global {
        ```
        */
       localStorageRestore(origin?: any): Chainable<LocalStorage>
+
+      /**
+       * Store a value of any type under an alias
+       * @param alias must be a string and NOT start with "@"
+       * @example
+      ```
+       it("Iterate over userlist", () => {
+         cy.wrap({ name: "John" }).writeAlias("user")
+         cy.wrapAlias("@user").then((username) => {
+           cy.log(user.name) // "John"
+         })
+       });
+      ```
+       */
+      writeAlias(alias: Alias): Chainable<string> | Cypress.Chainable<string[]>;
+      /**
+       * Store a value of any type under an alias
+       * @param alias must be a string and NOT start with "@"
+       * @example
+      ```
+       it("Iterate over userlist", () => {
+         cy.writeAlias("user", { name: "John" })
+         cy.wrapAlias("@user").then((username) => {
+           cy.log(user.name) // "John"
+         })
+       });
+      ```
+       */
+      writeAlias(alias: Alias, data: any): Chainable<string> | Cypress.Chainable<string[]>;
       /**
        * Return the value of an alias (with or with path to nested key)
        * @param alias must be a string and start with "@"
        * @example
        ```
-        it("Iterate over userlist", () => {
-          GET("/users")alias("userlist").send();
-          cy.wrapAlias("@userlist").each((user) => {
-            GET("/user/:id").params({ id: user.id }).send("inHook");
-          })
-        });
-       ```
+    it("Iterate over userlist", () => {
+      GET("/users").alias("userlist").send();
+      cy.wrapAlias("@userlist").each((user) => {
+        GET("/user/:id").params({ id: user.id }).send("inHook");
+      })
+    });
+    ```
        */
       wrapAlias(alias: Alias): Chainable<string> | Cypress.Chainable<string[]>;
       /**
@@ -55,8 +84,8 @@ declare global {
        * @param alias must be a string and start with "@"
        * @example
        ```
-          cy.dropAlias("@userlist");
-       ```
+    cy.dropAlias("@userlist");
+    ```
        */
       dropAlias(alias: Alias): Chainable<string> | Cypress.Chainable<string[]>;
       /**
@@ -64,23 +93,23 @@ declare global {
        * @param alias must be a string and start with "@"
        * @example
       ```
-          cy.setSession("@MyUser.token");
-      ```
+    cy.setSession("@MyUser.token");
+    ```
       */
       setSession(alias: Alias): Chainable<string> | Cypress.Chainable<string[]>;
       /**
        * Forget any session alias saved to use by default
        * @example
       ```
-          cy.dropSession();
-      ```
+    cy.dropSession();
+    ```
       */
       dropSession(): Chainable<string> | Cypress.Chainable<string[]>;
     }
   }
 }
 
-interface Alias {
+interface Alias extends String {
   startsWith: (prefix: string) => boolean;
   substring: (start: number) => string;
   length: number;
@@ -108,6 +137,19 @@ Cypress.Commands.add("localStorageRestore", (origin?: "fromFixture") => {
       localStorage.setItem(key, LOCAL_STORAGE_MEMORY[key]);
     });
   }
+});
+
+Cypress.Commands.add("writeAlias", { prevSubject: ['optional'] }, (subject, alias: Alias, data: any) => {
+  if (typeof alias !== "string") throw new Error("Alias should be a string");
+  if (alias.startsWith("@")) alias = alias.substring(1)
+
+  if (!!subject) if (typeof subject === "object") subject = JSON.stringify(subject)
+  if (!!data) if (typeof data === "object") data = JSON.stringify(data)
+
+  if (!!subject && !!data) throw new Error(`Confusing: should we store "${subject}" or "${data}"?`);
+  if (!subject && !data) throw new Error("There is no data to store");
+
+  cy.window({ log: false }).its("localStorage", { log: false }).invoke("setItem", alias, subject || data);
 });
 
 Cypress.Commands.add("wrapAlias", (alias: Alias) => {

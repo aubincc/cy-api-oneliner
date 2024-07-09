@@ -320,6 +320,30 @@ GET("/add/description").description("This test has a description").send();
 
 see the `.alias()` section [here](#across-tests--across-spec-files)
 
+### `cy.writeAlias()`
+
+Store a value into an alias, using writeAlias as a chained command or using a second param.
+
+Example:
+
+```javascript
+it("Verify the cy.writeAlias() command chained with subject", () => {
+  cy.wrap("is working").writeAlias("chained1");
+  cy.wrapAlias("@chained1").should("eq", "is working");
+
+  cy.wrap({ text: "is working" }).writeAlias("chained2");
+  cy.wrapAlias("@chained2.text").should("eq", "is working");
+});
+
+it("Verify the cy.writeAlias() command with given data", () => {
+  cy.writeAlias("subject1", "is working");
+  cy.wrapAlias("@subject1").should("eq", "is working");
+
+  cy.writeAlias("subject2", { text: "is working" });
+  cy.wrapAlias("@subject2.text").should("eq", "is working");
+});
+```
+
 ### `cy.wrapAlias()`
 
 Return a the value of an alias, with or without its nested key
@@ -403,7 +427,7 @@ GET("/user/3").send();
 - `ONELINER_API_AUTH_TYPE = "No Auth"` see the `.session()` section [here](#session-related-cypress-env-vars)
 - `ONELINER_API_AUTH_CREDENTIALS_LOCATION: "header"` see the `.session()` section [here](#session-related-cypress-env-vars)
 - `ONELINER_API_STATUS_CODES = {}` see the `.status()` section [here](#the-status-method)
-- `ONELINER_DEFAULT_REQUEST_PARAMS = {}`  to force `failOnStatusCode: false` or `form: true` for every request for example
+- `ONELINER_DEFAULT_REQUEST_PARAMS = {}` to force `failOnStatusCode: false` or `form: true` for every request for example
 
 ## Coming some day <small>(_my todo list_)</small>
 
