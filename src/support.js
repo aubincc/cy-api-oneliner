@@ -211,7 +211,7 @@ const requestBuilder = (config) => {
     if (requestParams) {
       builtConfig.url = Object.entries(requestParams).reduce((builtUrl, [key, value]) => {
         if (typeof value === "string" && value.startsWith("@")) {
-          const [alias, ...pathString] = value.slice(1).split(".");
+          let [alias, ...pathString] = value.slice(1).split(".");
           pathString = pathString.join("."); // weird fix
           const aliasValue = window.localStorage.getItem(alias);
           if (!aliasValue) {
