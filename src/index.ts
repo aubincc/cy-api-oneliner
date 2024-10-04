@@ -189,4 +189,25 @@ Cypress.Commands.add("dropSession", () => {
   });
 });
 
+Cypress.Commands.overwrite('request', (originalFn, ...args: [string | Partial<Cypress.RequestOptions>]) => {
+  const apiUrl = Cypress.env('API_URL');
+
+  let options: Partial<Cypress.RequestOptions>;
+
+  if (typeof args[0] === 'string') {
+    options = { url: args[0] };
+  } else {
+    options = args[0];
+  }
+
+  if (apiUrl) {
+    if (options.url && !options.url.startsWith('http')) {
+      options.url = `${apiUrl}${options.url}`;
+    }
+  }
+
+  return originalFn(options);
+});
+
+
 export { GET, POST, DELETE, PUT, PATCH, OPTIONS, HEAD };

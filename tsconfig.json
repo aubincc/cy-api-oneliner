@@ -3,9 +3,13 @@
         "outDir": "dist",
         "declaration": true,
         "allowJs": true,
-        "target": "es5",
+        "target": "es6",
         "removeComments": false,
-        "strict": true
+        "moduleResolution": "node",
+        "strict": true,
+        "types": [
+            "cypress"
+        ]
     },
     "include": [
         "./src/**/*"
