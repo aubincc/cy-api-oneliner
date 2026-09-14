@@ -1,6 +1,7 @@
 import "@bahmutov/cy-api";
-import "@cypress/skip-test/support";
 import { GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH, replaceAliasWithValue } from "./support.js";
+import { readSetting } from "./settings.js";
+import { skipOn as skipOnCommand, onlyOn as onlyOnCommand, isOn as isOnName } from "./skip-test.js";
 
 declare global {
   namespace Cypress {
@@ -19,7 +20,7 @@ declare global {
         });
        ```
        */
-      localStorageBackup(origin?: any): Chainable<LocalStorage>
+      localStorageBackup(origin?: any): Chainable<LocalStorage>;
       /**
        * Restore previous backup to the localStorage
        * @example
@@ -35,7 +36,7 @@ declare global {
         });
        ```
        */
-      localStorageRestore(origin?: any): Chainable<LocalStorage>
+      localStorageRestore(origin?: any): Chainable<LocalStorage>;
 
       /**
        * Store a value of any type under an alias
@@ -105,6 +106,30 @@ declare global {
     ```
       */
       dropSession(): Chainable<string> | Cypress.Chainable<string[]>;
+      /**
+       * Skips the current test if running on a given platform, browser, url or ENVIRONMENT (from Cypress.expose)
+       * @see https://github.com/aubincc/cy-api-oneliner#cyskipon--cyonlyon
+       * @example
+       * // skips the current test on Windows,
+       * // also skips if running in Electron
+       * cy.skipOn('windows')
+       *   .skipOn('electron')
+       * @example
+       * // skip the test if S is "foo"
+       * cy.skipOn(S === 'foo')
+       */
+      skipOn(nameOrFlag: string | boolean, cb?: () => void): Chainable<any>;
+      /**
+       * Only runs the current test if the current platform, browser, url or ENVIRONMENT (from Cypress.expose) matches the given name
+       * @see https://github.com/aubincc/cy-api-oneliner#cyskipon--cyonlyon
+       * @example
+       * // run this test on Mac
+       * cy.onlyOn('darwin')
+       * @example
+       * // run this test if S is "foo"
+       * cy.onlyOn(S === 'foo')
+       */
+      onlyOn(nameOrFlag: string | boolean, cb?: () => void): Chainable<any>;
     }
   }
 }
@@ -129,7 +154,7 @@ Cypress.Commands.add("localStorageBackup", (origin?: "toFixture") => {
 Cypress.Commands.add("localStorageRestore", (origin?: "fromFixture") => {
   if (origin === "fromFixture") {
     cy.fixture("localstorage.backup.json").then((fixturebackup) => {
-      LOCAL_STORAGE_MEMORY = { ...LOCAL_STORAGE_MEMORY, ...fixturebackup }
+      LOCAL_STORAGE_MEMORY = { ...LOCAL_STORAGE_MEMORY, ...fixturebackup };
       cy.localStorageRestore();
     });
   } else {
@@ -139,17 +164,19 @@ Cypress.Commands.add("localStorageRestore", (origin?: "fromFixture") => {
   }
 });
 
-Cypress.Commands.add("writeAlias", { prevSubject: ['optional'] }, (subject, alias: Alias, data: any) => {
+Cypress.Commands.add("writeAlias", { prevSubject: ["optional"] }, (subject, alias: Alias, data: any) => {
   if (typeof alias !== "string") throw new Error("Alias should be a string");
-  if (alias.startsWith("@")) alias = alias.substring(1)
+  if (alias.startsWith("@")) alias = alias.substring(1);
 
-  if (!!subject) if (typeof subject === "object") subject = JSON.stringify(subject)
-  if (!!data) if (typeof data === "object") data = JSON.stringify(data)
+  if (!!subject) if (typeof subject === "object") subject = JSON.stringify(subject);
+  if (!!data) if (typeof data === "object") data = JSON.stringify(data);
 
   if (!!subject && !!data) throw new Error(`Confusing: should we store "${subject}" or "${data}"?`);
   if (!subject && !data) throw new Error("There is no data to store");
 
-  cy.window({ log: false }).its("localStorage", { log: false }).invoke("setItem", alias, subject || data);
+  cy.window({ log: false })
+    .its("localStorage", { log: false })
+    .invoke("setItem", alias, subject || data);
 });
 
 Cypress.Commands.add("wrapAlias", (alias: Alias) => {
@@ -157,7 +184,7 @@ Cypress.Commands.add("wrapAlias", (alias: Alias) => {
 });
 
 Cypress.Commands.add("dropAlias", (alias: Alias) => {
-  const lsKey: string = alias.substring(1)
+  const lsKey: string = alias.substring(1);
   cy.wrap(window.localStorage.getItem(lsKey), { log: false }).then((aliasNameExists) => {
     if (aliasNameExists) {
       cy.window({ log: false }).its("localStorage", { log: false }).invoke("removeItem", lsKey);
@@ -167,14 +194,14 @@ Cypress.Commands.add("dropAlias", (alias: Alias) => {
 
 Cypress.Commands.add("setSession", (alias: Alias) => {
   if (alias) {
-    const foundAlias = replaceAliasWithValue(alias)
+    const foundAlias = replaceAliasWithValue(alias);
     if (foundAlias === alias) {
-      expect(alias, "setSession works better with an alias that can be found").to.equal("_alias_not_found_")
+      expect(alias, "setSession works better with an alias that can be found").to.equal("_alias_not_found_");
     } else {
       cy.window({ log: false }).its("localStorage", { log: false }).invoke("setItem", "setSession", alias);
     }
   } else {
-    expect(alias, "setSession works better with an alias").to.equal("_alias_not_provided_")
+    expect(alias, "setSession works better with an alias").to.equal("_alias_not_provided_");
   }
 });
 
@@ -182,26 +209,30 @@ Cypress.Commands.add("dropSession", () => {
   cy.wrap(window.localStorage.getItem("setSession"), { log: false }).then((sessionExists) => {
     if (sessionExists) {
       cy.window({ log: false }).its("localStorage", { log: false }).invoke("removeItem", "setSession");
-      delete LOCAL_STORAGE_MEMORY["setSession"]
+      delete LOCAL_STORAGE_MEMORY["setSession"];
     } else {
-      cy.log("No set session to drop")
+      cy.log("No set session to drop");
     }
   });
 });
 
-Cypress.Commands.overwrite('request', (originalFn, ...args: [string | Partial<Cypress.RequestOptions>]) => {
-  const apiUrl = Cypress.env('API_URL');
+Cypress.Commands.add("skipOn", skipOnCommand);
+
+Cypress.Commands.add("onlyOn", onlyOnCommand);
+
+Cypress.Commands.overwrite("request", (originalFn, ...args: [string | Partial<Cypress.RequestOptions>]) => {
+  const apiUrl = readSetting("API_URL");
 
   let options: Partial<Cypress.RequestOptions>;
 
-  if (typeof args[0] === 'string') {
+  if (typeof args[0] === "string") {
     options = { url: args[0] };
   } else {
     options = args[0];
   }
 
   if (apiUrl) {
-    if (options.url && !options.url.startsWith('http')) {
+    if (options.url && !options.url.startsWith("http")) {
       options.url = `${apiUrl}${options.url}`;
     }
   }
@@ -209,5 +240,19 @@ Cypress.Commands.overwrite('request', (originalFn, ...args: [string | Partial<Cy
   return originalFn(options);
 });
 
+/**
+ * Skips the tests registered in the callback when running on the given platform, browser, url or ENVIRONMENT (or when the flag is true)
+ * @example skipOn("windows", () => { it("works", () => {}) })
+ */
+const skipOn: (nameOrFlag: string | boolean, cb?: () => void) => Cypress.Chainable<any> = skipOnCommand;
+/**
+ * Registers the tests of the callback only when running on the given platform, browser, url or ENVIRONMENT (or when the flag is true)
+ * @example onlyOn("localhost", () => { it("works", () => {}) })
+ */
+const onlyOn: (nameOrFlag: string | boolean, cb?: () => void) => Cypress.Chainable<any> = onlyOnCommand;
+/**
+ * Returns true when running on the given platform, browser, url or ENVIRONMENT (read with Cypress.expose)
+ */
+const isOn: (name: string) => boolean = isOnName;
 
-export { GET, POST, DELETE, PUT, PATCH, OPTIONS, HEAD };
+export { GET, POST, DELETE, PUT, PATCH, OPTIONS, HEAD, skipOn, onlyOn, isOn };

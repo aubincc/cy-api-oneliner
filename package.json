@@ -8,11 +8,11 @@
     "/dist/*"
   ],
   "scripts": {
-    "test": "cypress run",
-    "cy:open": "cypress open --e2e --browser electron",
+    "test": "cypress run --browser firefox",
+    "cy:open": "cypress open --e2e --browser firefox",
     "start": "node ./server",
     "e2e": "start-test 3003",
-    "dev": "start-test 3003 cy:open --e2e --browser electron",
+    "dev": "start-test 3003 cy:open --e2e --browser firefox",
     "semantic-release": "semantic-release",
     "build": "tsc",
     "build:watch": "tsc --watch"
@@ -37,17 +37,16 @@
   "homepage": "https://github.com/aubincc/cy-api-oneliner#readme",
   "devDependencies": {
     "@types/node": "^22.7.4",
-    "cypress": "^13.15.0",
+    "cypress": "^15.21.1",
     "express": "^4.21.0",
     "prettier": "^3.3.3",
     "start-server-and-test": "^2.0.8",
     "typescript": "^5.6.2"
   },
   "peerDependencies": {
-    "cypress": ">=3"
+    "cypress": ">=15.10.0"
   },
   "dependencies": {
-    "@bahmutov/cy-api": "^2.2.6",
-    "@cypress/skip-test": "^2.6.1"
+    "@bahmutov/cy-api": "^2.3.0"
   }
 }

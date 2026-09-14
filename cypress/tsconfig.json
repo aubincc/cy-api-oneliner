@@ -8,8 +8,7 @@
         "types": [
             "node",
             "cypress",
-            "@bahmutov/cy-api",
-            "@cypress/skip-test"
+            "@bahmutov/cy-api"
         ],
         "typeRoots": [
             "./node_modules/@types",

@@ -1,3 +1,5 @@
+import { readSetting } from "./settings.js";
+
 const pathToPathArray = (str) => {
   if (Array.isArray(str)) {
     return str;
@@ -202,7 +204,7 @@ const requestBuilder = (config) => {
     const { method, url } = config;
     const builtConfig = { method, url };
 
-    const defaultParams = Cypress.env("ONELINER_DEFAULT_REQUEST_PARAMS");
+    const defaultParams = readSetting("ONELINER_DEFAULT_REQUEST_PARAMS");
 
     if (defaultParams) {
       Object.assign(builtConfig, defaultParams);
@@ -286,9 +288,11 @@ const requestBuilder = (config) => {
   const buildStatusAssertions = () => {
     let builtStatusAssertions = [];
     if (responseStatusCode !== "") {
-      // QUESTION: "Has Cypress.env("ONELINER_API_STATUS_CODE_NAMES") been configured?"
-      // https://github.com/aubincc/cy-api-oneliner#cypress-environment-variables
-      const resolvedResponseStatusAssertions = Cypress.env("ONELINER_API_STATUS_CODE_NAMES")[responseStatusCode] || {};
+      const statusCodeNames = readSetting("ONELINER_API_STATUS_CODE_NAMES");
+      if (!statusCodeNames) {
+        throw new Error(`.status("${responseStatusCode}") needs the ONELINER_API_STATUS_CODE_NAMES setting in "expose": https://github.com/aubincc/cy-api-oneliner#the-status-method`);
+      }
+      const resolvedResponseStatusAssertions = statusCodeNames[responseStatusCode] || {};
       if (Object.keys(resolvedResponseStatusAssertions).length) {
         builtStatusAssertions = Object.entries(resolvedResponseStatusAssertions).map(([key, value]) => {
           const obj = {};
@@ -348,16 +352,15 @@ const requestBuilder = (config) => {
    * @param mode if "inHook", allows the function to be ran in Cypress hooks
    */
   const executeRequest = (mode) => () => {
-    // QUESTION: "Has Cypress.env("ONELINER_API_AUTH_TYPE") been configured?"
-    // https://github.com/aubincc/cy-api-oneliner#cypress-environment-variables
-    let authType = Cypress.env("ONELINER_API_AUTH_TYPE") || "No Auth";
-    // QUESTION: "Has Cypress.env("ONELINER_API_AUTH_TYPE") been configured?"
-    // https://github.com/aubincc/cy-api-oneliner#cypress-environment-variables
-    const authLocation = Cypress.env("ONELINER_API_AUTH_CREDENTIALS_LOCATION") || "header";
-
     const testTitle = buildTitle();
 
     if (mode === "inHook") {
+      // read inside the test or hook, where suite and test "expose" overrides apply
+      // QUESTION: "Have ONELINER_API_AUTH_TYPE and ONELINER_API_AUTH_CREDENTIALS_LOCATION been configured?"
+      // https://github.com/aubincc/cy-api-oneliner#session-related-settings
+      const authType = readSetting("ONELINER_API_AUTH_TYPE") || "No Auth";
+      const authLocation = readSetting("ONELINER_API_AUTH_CREDENTIALS_LOCATION") || "header";
+
       if (!Object.keys(authCredentials).length && authCredentials !== "") {
         cy.window({ log: false })
           .its("localStorage", { log: false })
@@ -402,9 +405,9 @@ const requestBuilder = (config) => {
           })
           .then((response) => {
             if (responseAlias) {
-              // QUESTION: "Has Cypress.env("ONELINER_DEFAULT_PATH_FOR_ALIAS") been configured?"
-              // https://github.com/aubincc/cy-api-oneliner#cypress-environment-variables
-              aliasPath = aliasPath || Cypress.env("ONELINER_DEFAULT_PATH_FOR_ALIAS") || "body";
+              // QUESTION: "Has ONELINER_DEFAULT_PATH_FOR_ALIAS been configured?"
+              // https://github.com/aubincc/cy-api-oneliner#alias-related-settings
+              aliasPath = aliasPath || readSetting("ONELINER_DEFAULT_PATH_FOR_ALIAS") || "body";
               const savedData = pathArrayToValue(response, pathToPathArray(aliasPath));
               window.localStorage.setItem(responseAlias, stringifyAnything(savedData));
             }
