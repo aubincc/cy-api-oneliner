@@ -62,7 +62,7 @@ declare module "cy-api-oneliner" {
   type RequestBuilder = {
     /**
      * Trigger the request
-     * 
+     *
      * .send() is mandatory at the end of every test
      * @param {any} mode should be undefined or equal to "inHook", see the examples or the documentation for an explanation
      * @example GET("/user").send() // sends the command in a prebuilt "it()" test
@@ -75,12 +75,9 @@ declare module "cy-api-oneliner" {
      * @param {Record<string, string>} pathToSavedValue The stringified path to the value in the response
      * @example GET("/group/:id").alias("FirstUser", "body.data.user[0]").send()
      * @example GET("/user/:id").alias("MyUser").send()
-     * @requires Cypress.env("ONELINER_DEFAULT_PATH_FOR_ALIAS") to be configured (otherwise defaults to "body.data")
+     * @requires Cypress.expose("ONELINER_DEFAULT_PATH_FOR_ALIAS") to be configured (otherwise defaults to "body")
      */
-    alias: (
-      name: string,
-      pathToSavedValue?: Record<string, string> | string | null
-    ) => RequestBuilder;
+    alias: (name: string, pathToSavedValue?: Record<string, string> | string | null) => RequestBuilder;
     /**
      * Replace the identified endpoint param values
      * @param {Record<string, string | number>} params The value of the param to replace in the endpoint
@@ -102,9 +99,9 @@ declare module "cy-api-oneliner" {
     /**
      * Make assertions on the response status code and other things
      * @param {StatusCodeName} statusCodeName The alias that you gave to an object containing grouped assertion patterns
-     * @requires Cypress.env("ONELINER_API_STATUS_CODE_NAMES") to be configured
+     * @requires Cypress.expose("ONELINER_API_STATUS_CODE_NAMES") to be configured
      * @example
-        ##### Cypress Env variable
+        ##### Cypress expose setting
         ```
           ONELINER_API_STATUS_CODE_NAMES: {
             OK: { status: 200, "body.error": 0, "body.state": "ok" },
@@ -130,12 +127,12 @@ declare module "cy-api-oneliner" {
      * @param {Credentials} credentials Object containing session information
      * @example GET("/user").session({ jwt: eyJ... }).send()
      * @example GET("/user").session("@my-alias.jwt").send()
-     * @requires Cypress.env("ONELINER_API_AUTH_TYPE") to be configured (otherwise defaults to "No Auth")
-     * @requires Cypress.env("ONELINER_API_AUTH_CREDENTIALS_LOCATION") to be configured (otherwise defaults to "header")
+     * @requires Cypress.expose("ONELINER_API_AUTH_TYPE") to be configured (otherwise defaults to "No Auth")
+     * @requires Cypress.expose("ONELINER_API_AUTH_CREDENTIALS_LOCATION") to be configured (otherwise defaults to "header")
      * @example
-        ##### Cypress Env variables
+        ##### Cypress expose settings
         ```
-          ONELINER_API_AUTH_TYPE: "JWT Bearer",
+          ONELINER_API_AUTH_TYPE: "Bearer Token",
           ONELINER_API_AUTH_CREDENTIALS_LOCATION: "header",
         ```
         ##### Usage
@@ -152,11 +149,11 @@ declare module "cy-api-oneliner" {
 
   type Credentials =
     | {
-      token?: string;
-      username?: string;
-      password?: string;
-      apiKey?: string;
-      jwt?: string;
-    }
+        token?: string;
+        username?: string;
+        password?: string;
+        apiKey?: string;
+        jwt?: string;
+      }
     | string;
 }
