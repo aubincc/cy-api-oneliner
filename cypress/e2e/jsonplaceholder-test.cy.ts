@@ -4,7 +4,7 @@ import { GET } from "../../dist";
 describe(
   "The jsonplaceholder test",
   {
-    env: {
+    expose: {
       ONELINER_DEFAULT_PATH_FOR_ALIAS: "body",
       ONELINER_DEFAULT_REQUEST_PARAMS: {
         failOnStatusCode: false,

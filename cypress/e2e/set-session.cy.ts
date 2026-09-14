@@ -1,11 +1,10 @@
 /// <reference types="../../dist" />
 import { GET, POST } from "../../dist";
 
-
 context(
   "setSession",
   {
-    env: {
+    expose: {
       userpwd: { login: "admin@cypress", password: "I4mGr00t!" },
       API_MESSAGES: false, // @bahmutov/cy-api
       API_SHOW_CREDENTIALS: false, // @bahmutov/cy-api
@@ -34,7 +33,11 @@ context(
       });
 
       before(() => {
-        POST("/auth/login").bodyparams({ user: Cypress.env("userpwd").login, pwd: Cypress.env("userpwd").password }).alias("m-e").status("OK").send("inHook");
+        POST("/auth/login")
+          .bodyparams({ user: Cypress.expose("userpwd").login, pwd: Cypress.expose("userpwd").password })
+          .alias("m-e")
+          .status("OK")
+          .send("inHook");
         cy.setSession("@m-e.jwt");
         GET("/user/:id").params({ id: 1 }).session("@m-e.jwt").description("@m-e.jwt uses @m-e.jwt").send("inHook"); // uses "@m-e.jwt"
         cy.localStorageBackup();
@@ -42,7 +45,7 @@ context(
 
       it("", () => {
         cy.log("Check the pre-requests from the before hook");
-      })
+      });
       GET("/user/:id").params({ id: 1 }).description("no session method uses DEFAULT @m-e.jwt").send(); // uses "@m-e.jwt"
       GET("/user/:id").params({ id: 1 }).session("@m-e.jwt").description("@m-e.jwt uses @m-e.jwt").send(); // uses "@m-e.jwt"
       GET("/user/:id").params({ id: 0 }).session({}).description("EMPTY OBJECT uses DEFAULT @m-e.jwt").send(); // uses "@m-e.jwt"
@@ -68,7 +71,11 @@ context(
       });
 
       before(() => {
-        POST("/auth/login").bodyparams({ user: Cypress.env("userpwd").login, pwd: Cypress.env("userpwd").password }).alias("m-e", "body.data.jwt").status("OK").send("inHook");
+        POST("/auth/login")
+          .bodyparams({ user: Cypress.expose("userpwd").login, pwd: Cypress.expose("userpwd").password })
+          .alias("m-e", "body.data.jwt")
+          .status("OK")
+          .send("inHook");
         cy.setSession("@m-e");
         GET("/user/:id").params({ id: 1 }).session("@m-e").description("@m-e uses @m-e").send("inHook"); // uses "@m-e"
         cy.localStorageBackup();
@@ -76,7 +83,7 @@ context(
 
       it("", () => {
         cy.log("Check the pre-requests from the before hook");
-      })
+      });
       GET("/user/:id").params({ id: 1 }).description("no session method uses DEFAULT @m-e").send(); // uses "@m-e"
       GET("/user/:id").params({ id: 1 }).session("@m-e").description("@m-e uses @m-e").send(); // uses "@m-e"
       GET("/user/:id").params({ id: 0 }).session({}).description("EMPTY OBJECT uses DEFAULT @m-e").send(); // uses "@m-e"

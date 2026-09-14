@@ -4,7 +4,7 @@ import { GET, POST } from "../../dist";
 describe(
   "Magic!",
   {
-    env: {
+    expose: {
       userpwd: { login: "admin@cypress", password: "I4mGr00t!" },
       API_MESSAGES: false, // @bahmutov/cy-api
       API_SHOW_CREDENTIALS: false, // @bahmutov/cy-api
@@ -27,7 +27,6 @@ describe(
       cy.localStorageRestore("fromFixture");
     });
 
-
     beforeEach(() => {
       cy.localStorageRestore();
     });
@@ -41,7 +40,11 @@ describe(
     });
 
     before(() => {
-      POST("/auth/login").bodyparams({ user: Cypress.env("userpwd").login, pwd: Cypress.env("userpwd").password }).alias("m-e").status("OK").send("inHook")
+      POST("/auth/login")
+        .bodyparams({ user: Cypress.expose("userpwd").login, pwd: Cypress.expose("userpwd").password })
+        .alias("m-e")
+        .status("OK")
+        .send("inHook");
     });
 
     it("trigger a request in the before hook", () => {
@@ -69,21 +72,32 @@ describe(
     GET("/add/description").description("This test has a description").send();
 
     it("Try the cy.dropAlias() command", () => {
-      cy.window({ log: false }).its("localStorage", { log: false }).invoke("getItem", "user1").then((object) => {
-        expect(JSON.parse(object)).to.include({ "id": 2, "name": "Bahmutov", "firstname": "Gleb", "email": "cypress2@api.cc" })
-      });
+      cy.window({ log: false })
+        .its("localStorage", { log: false })
+        .invoke("getItem", "user1")
+        .then((object) => {
+          expect(JSON.parse(object)).to.include({ id: 2, name: "Bahmutov", firstname: "Gleb", email: "cypress2@api.cc" });
+        });
       cy.dropAlias("@user1");
-      cy.window({ log: false }).its("localStorage", { log: false }).invoke("getItem", "user1").then((object) => {
-        expect(object).to.eq(null)
-      });
-      cy.window({ log: false }).its("localStorage", { log: false }).invoke("getItem", "user2").then((object) => {
-        expect(JSON.parse(object)).to.include({ "id": 2, "email": "cypress2@api.cc", "name": "Bahmutov", "firstname": "Gleb" })
-      });
+      cy.window({ log: false })
+        .its("localStorage", { log: false })
+        .invoke("getItem", "user1")
+        .then((object) => {
+          expect(object).to.eq(null);
+        });
+      cy.window({ log: false })
+        .its("localStorage", { log: false })
+        .invoke("getItem", "user2")
+        .then((object) => {
+          expect(JSON.parse(object)).to.include({ id: 2, email: "cypress2@api.cc", name: "Bahmutov", firstname: "Gleb" });
+        });
       cy.dropAlias("@user2");
-      cy.window({ log: false }).its("localStorage", { log: false }).invoke("getItem", "user2").then((object) => {
-        expect(object).to.eq(null)
-      });
+      cy.window({ log: false })
+        .its("localStorage", { log: false })
+        .invoke("getItem", "user2")
+        .then((object) => {
+          expect(object).to.eq(null);
+        });
     });
-
   }
 );
